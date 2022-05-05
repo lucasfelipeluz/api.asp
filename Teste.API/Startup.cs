@@ -1,8 +1,11 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using AutoMapper;
 
 using Teste.Application.Interfaces;
 using Teste.Application;
@@ -39,11 +42,21 @@ namespace Teste.API
                     x => x.SerializerSettings.ReferenceLoopHandling = 
                         Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddCors();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Teste.API", Version = "v1" });
+            });
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+       
             app.UseRouting();
 
             app.UseAuthorization();

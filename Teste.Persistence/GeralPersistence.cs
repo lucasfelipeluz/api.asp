@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
 using Teste.Persistence.Context;
 using Teste.Persistence.Interfaces;
 
@@ -11,6 +13,7 @@ namespace Teste.Persistence
         public GeralPersistence(TesteContext context)
         {
             _context = context;
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public void Add<T>(T entity) where T : class

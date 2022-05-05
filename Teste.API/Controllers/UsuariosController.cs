@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Teste.Domain;
 using Teste.Application.Interfaces;
-using Teste.API.Dto;
-
+using Teste.Application.Dto;
 
 namespace Teste.API.Controllers
 {
@@ -26,9 +25,9 @@ namespace Teste.API.Controllers
         {
             try
             {
-                Usuario[] response = await _usuariosServices.GetAllUsuarios();
-                if (response.Length == 0) { 
-                    return this.StatusCode(StatusCodes.Status204NoContent);
+                UsuarioDto[] response = await _usuariosServices.GetAllUsuarios();
+                if (response.Length == 0) {
+                    return NoContent();
                 }
                 
                 return Ok(response);
@@ -45,20 +44,12 @@ namespace Teste.API.Controllers
         {
             try
             {
-                var newUsuario = new Usuario{
-                    Name = usuario.Name,
-                    City = usuario.City,
-                    CityId = usuario.CityId,
-                    Age = usuario.Age,
-                    Birth = DateTime.Parse(usuario.Birth)
-                };
-
-                var response = await _usuariosServices.AddUsuario(newUsuario);
-                if (response)
+                var response = await _usuariosServices.AddUsuario(usuario);
+                if (response == true)
                 {
                     return Ok("Usuário adicionado com sucesso!");
                 }
-                return this.StatusCode(StatusCodes.Status401Unauthorized);
+                return Unauthorized();
             }
             catch (Exception error)
             {
@@ -68,14 +59,18 @@ namespace Teste.API.Controllers
         }
     
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put (int id, Usuario usuario)
+        public async Task<IActionResult> Put (int id, UsuarioDto usuario)
         {
             try
             {
-                Usuario responseUpdateUsuario = await _usuariosServices.UpdateUsuario(id, usuario);
+                bool? responseUpdateUsuario = await _usuariosServices.UpdateUsuario(id, usuario);
                 if(responseUpdateUsuario != null)
                 {
-                    return Ok(responseUpdateUsuario);
+                    return Ok($"Usuário editado!");
+                }
+                if (responseUpdateUsuario == false)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao editar o Usuário.");
                 }
                 return BadRequest("Nenhum usuário encontrado!");
             }
@@ -92,8 +87,8 @@ namespace Teste.API.Controllers
         {
             try
             {
-                bool responseDeleteUsuario = await _usuariosServices.DeleteUsuario(id);
-                if(responseDeleteUsuario)
+                bool? responseDeleteUsuario = await _usuariosServices.DeleteUsuario(id);
+                if(responseDeleteUsuario == true)
                 {
                     return Ok("Usuário deletado!");
                 }
@@ -111,7 +106,7 @@ namespace Teste.API.Controllers
         {
             try
             {
-                Usuario usuario = await _usuariosServices.GetUsuarioById(id);
+                UsuarioDto usuario = await _usuariosServices.GetUsuarioById(id);
                 
                 if (usuario != null){
                     return Ok(usuario);

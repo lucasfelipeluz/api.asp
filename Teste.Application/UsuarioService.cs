@@ -1,5 +1,7 @@
+using AutoMapper;
 using System;
 using System.Threading.Tasks;
+using Teste.Application.Dto;
 using Teste.Application.Interfaces;
 using Teste.Domain;
 
@@ -11,22 +13,31 @@ namespace Teste.Application
     {
         private readonly IGeralPersistence _geralPersistence;
         private readonly IUsuarioPersistence _usuarioPersistence;
+        private readonly IMapper _mapper;
 
-        public UsuarioService(IGeralPersistence geralPersistence, IUsuarioPersistence usuarioPersistence)
+        public UsuarioService(
+            IGeralPersistence geralPersistence, 
+            IUsuarioPersistence usuarioPersistence,
+            IMapper mapper
+            )
         {
             this._geralPersistence = geralPersistence;
             this._usuarioPersistence = usuarioPersistence;
+            this._mapper = mapper;
         }
-        public async Task<bool> AddUsuario(Usuario usuario)
+        public async Task<bool?> AddUsuario(UsuarioDto usuario)
         {
             try
             {
-                _geralPersistence.Add<Usuario>(usuario);
+                Usuario newUsuario = _mapper.Map<Usuario>(usuario);
+
+                _geralPersistence.Add<Usuario>(newUsuario);
+                
                 if (await _geralPersistence.SaveChangesAsync())
                 {
                     return true;
                 }
-                return false;
+                return null;
             }
             catch (Exception error)
             {
@@ -34,7 +45,7 @@ namespace Teste.Application
             }
         }
 
-        public async Task<bool> DeleteUsuario(int id)
+        public async Task<bool?> DeleteUsuario(int id)
         {
             try
             {
@@ -55,12 +66,15 @@ namespace Teste.Application
             }
         }
 
-        public async Task<Usuario[]> GetAllUsuarios()
+        public async Task<UsuarioDto[]> GetAllUsuarios()
         {
             try
             {
                 var usuarios = await _usuarioPersistence.GetAllUsuariosAsync();
-                return usuarios;
+
+                var resultado = this._mapper.Map<UsuarioDto[]>(usuarios);
+
+                return resultado;
             }
             catch (Exception error)
             {
@@ -68,14 +82,16 @@ namespace Teste.Application
             }
         }
 
-        public async Task<Usuario> GetUsuarioById(int id)
+        public async Task<UsuarioDto> GetUsuarioById(int id)
         {
             try
             {
                 var usuario = await _usuarioPersistence.GetUsuarioByIdAsync(id);
                 if (usuario == null) return null;
+
+                var resultado = _mapper.Map<UsuarioDto>(usuario);
                 
-                return usuario;
+                return resultado;
             }
             catch (Exception error)
             {
@@ -83,19 +99,21 @@ namespace Teste.Application
             }
         }
 
-        public async Task<Usuario> UpdateUsuario(int id, Usuario newUsuario)
+        public async Task<bool?> UpdateUsuario(int id, UsuarioDto model)
         {
             try
             {
                 var usuario = await _usuarioPersistence.GetUsuarioByIdAsync(id);
-                if ( usuario == null ) return null;
+                if (usuario == null) return null;
 
-                newUsuario.Id = usuario.Id;
+                model.Id = usuario.Id;
 
-                _geralPersistence.Update<Usuario>(newUsuario);
-                if(await _geralPersistence.SaveChangesAsync())
+                _mapper.Map(model, usuario);
+
+                _geralPersistence.Update<Usuario>(usuario);
+                if (await _geralPersistence.SaveChangesAsync())
                 {
-                    return newUsuario;
+                    return true;
                 }
                 return null;
             }
