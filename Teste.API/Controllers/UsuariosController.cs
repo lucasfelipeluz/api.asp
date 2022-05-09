@@ -77,7 +77,7 @@ namespace Teste.API.Controllers
                 $"Erro ao tentar se comunicar com servidor\n ERROR: {error.Message}");
             }
         }
-    
+
         [HttpPut("edit/{id}")]
         public async Task<IActionResult> Put (int id, UsuarioDto usuario)
         {

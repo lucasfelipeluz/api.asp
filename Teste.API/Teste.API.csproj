@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Teste.Application\Teste.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\Images\" />
+  </ItemGroup>
+
 </Project>
