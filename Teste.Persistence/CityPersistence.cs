@@ -36,5 +36,14 @@ namespace Teste.Persistence
 
             return await query.FirstOrDefaultAsync();
         }
+
+        public async Task<City> GetCityByCodeAsync (int code)
+        {
+            IQueryable<City> query = _context.City;
+            query = query.OrderBy(city => city.CityCode)
+                .Where(city => city.CityCode == code);
+
+            return await query.FirstOrDefaultAsync();
+        }
     }
 }

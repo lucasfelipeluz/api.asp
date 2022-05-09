@@ -3,23 +3,22 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-using Teste.Domain;
 using Teste.Application.Interfaces;
 using Teste.Application.Dto;
 
 namespace Teste.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class UsuariosController : ControllerBase
+    [Route("user")]
+    public class UserController : ControllerBase
     {
         private readonly IUsuarioService _usuariosServices;
 
-        public UsuariosController(IUsuarioService usuariosService)
+        public UserController(IUsuarioService usuariosService)
         {
             this._usuariosServices = usuariosService;
         }
-
+       
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -38,8 +37,29 @@ namespace Teste.API.Controllers
                 $"Erro ao tentar recuperar os usuarios\n ERROR: {error.Message}");
             }
         }
-    
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                UsuarioDto usuario = await _usuariosServices.GetUsuarioById(id);
+
+                if (usuario != null)
+                {
+                    return Ok(usuario);
+                }
+                return BadRequest("Usuário não encontrado!");
+            }
+            catch (Exception error)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                $"Erro ao tentar obter o usuário\n ERROR: {error.Message}");
+            }
+        }
+
         [HttpPost]
+        [Route("add")]
         public async Task<IActionResult> Add(UsuarioDto usuario)
         {
             try
@@ -58,7 +78,7 @@ namespace Teste.API.Controllers
             }
         }
     
-        [HttpPut("{id}")]
+        [HttpPut("edit/{id}")]
         public async Task<IActionResult> Put (int id, UsuarioDto usuario)
         {
             try
@@ -82,7 +102,7 @@ namespace Teste.API.Controllers
             
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete (int id)
         {
             try
@@ -101,23 +121,5 @@ namespace Teste.API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById (int id)
-        {
-            try
-            {
-                UsuarioDto usuario = await _usuariosServices.GetUsuarioById(id);
-                
-                if (usuario != null){
-                    return Ok(usuario);
-                }
-                return BadRequest("Usuário não encontrado!");
-            }
-            catch (Exception error)
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError,
-                $"Erro ao tentar obter o usuário\n ERROR: {error.Message}");
-            }
-        }
     }
 }

@@ -7,5 +7,6 @@ namespace Teste.Persistence.Interfaces
     {
         Task<City[]> GetAllCityAsync (); 
         Task<City> GetCityByIdAsync (int id);
+        Task<City> GetCityByCodeAsync (int code);
     }
 }

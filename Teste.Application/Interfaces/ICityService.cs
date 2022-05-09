@@ -1,15 +1,16 @@
 using System.Threading.Tasks;
-
+using Teste.Application.Dto;
 using Teste.Domain;
 
 namespace Teste.Application.Interfaces
 {
     public interface ICityService
     {
-        Task<City[]> GetAllCity ();
-        Task<City> GetCityById (int id);
-        Task<bool> AddCity (City city);
-        Task<City> UpdateCity (int id, City newCity);
+        Task<CityDto[]> GetAllCity ();
+        Task<CityDto> GetCityById (int id);
+        Task<CityDto> GetCityByCode(int code);
+        Task<bool> AddCity (CityDto city);
+        Task<bool?> UpdateCity (int id, CityDto newCity);
         Task<bool> DeleteCity (int id);
 
     }

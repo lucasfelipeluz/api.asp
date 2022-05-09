@@ -15,11 +15,7 @@ namespace Teste.Application
         private readonly IUsuarioPersistence _usuarioPersistence;
         private readonly IMapper _mapper;
 
-        public UsuarioService(
-            IGeralPersistence geralPersistence, 
-            IUsuarioPersistence usuarioPersistence,
-            IMapper mapper
-            )
+        public UsuarioService(IGeralPersistence geralPersistence, IUsuarioPersistence usuarioPersistence,IMapper mapper)
         {
             this._geralPersistence = geralPersistence;
             this._usuarioPersistence = usuarioPersistence;
@@ -70,9 +66,9 @@ namespace Teste.Application
         {
             try
             {
-                var usuarios = await _usuarioPersistence.GetAllUsuariosAsync();
+                Usuario[] usuarios = await _usuarioPersistence.GetAllUsuariosAsync();
 
-                var resultado = this._mapper.Map<UsuarioDto[]>(usuarios);
+                UsuarioDto[] resultado = this._mapper.Map<UsuarioDto[]>(usuarios);
 
                 return resultado;
             }

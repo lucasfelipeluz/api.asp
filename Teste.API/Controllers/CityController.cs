@@ -5,17 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 
 using Teste.Domain;
 using Teste.Application.Interfaces;
+using Teste.Application.Dto;
 
 namespace Teste.API.Controllers
 {
     [ApiController]
     [Route("city")]
-    public class CityControllers : ControllerBase
+    public class CityController : ControllerBase
     {
 
         private readonly ICityService _cityService;
 
-        public CityControllers (ICityService cityService)
+        public CityController (ICityService cityService)
         {
             this._cityService = cityService;
         }
@@ -25,7 +26,7 @@ namespace Teste.API.Controllers
         {
             try
             {
-                City[] city = await _cityService.GetAllCity();
+                CityDto[] city = await _cityService.GetAllCity();
                 if (city.Length == 0) return this.StatusCode(StatusCodes.Status204NoContent);
 
                 return Ok(city);
@@ -37,8 +38,42 @@ namespace Teste.API.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById (int id)
+        {
+            try
+            {
+                CityDto city = await _cityService.GetCityById(id);
+                if (city == null) return BadRequest("Cidade não encontrada!");
+                return Ok(city);
+            }
+            catch (Exception error)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                $"Erro ao tentar obter o usuário\n ERROR: {error.Message}");
+            }
+        }
+
+        [HttpGet("code={code}")]
+        public async Task<IActionResult> GetByCode (int code)
+        {
+            try
+            {
+                CityDto city = await this._cityService.GetCityByCode(code);
+                if (city == null) return BadRequest("Cidade não encontrada!");
+                return Ok(city);
+
+            }
+            catch (Exception error)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                $"Erro ao tentar obter o usuário\n ERROR: {error.Message}");
+            }
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Post(City city)
+        [Route("add")]
+        public async Task<IActionResult> Post(CityDto city)
         {
             try
             {
@@ -54,12 +89,13 @@ namespace Teste.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, City city)
+        [HttpPut]
+        [Route("edit/{id}")]
+        public async Task<IActionResult> Put(int id, CityDto city)
         {
             try
             {
-                City response = await _cityService.UpdateCity(id, city);
+                bool? response = await _cityService.UpdateCity(id, city);
                 if (response == null) return BadRequest("Id informado não corresponde a nenhuma cidade!");
 
                 return Ok(response);
@@ -71,7 +107,8 @@ namespace Teste.API.Controllers
             }
         }
     
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("delete/{id}")]
         public async Task<IActionResult> Delete(int id) {
             try
             {

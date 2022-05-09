@@ -10,6 +10,9 @@ namespace Teste.Application.Helpers
         {
             CreateMap<Usuario, UsuarioDto>();
             CreateMap<UsuarioDto, Usuario>();
+
+            CreateMap<City, CityDto>();
+            CreateMap<CityDto, City>();
         }
     }
 }

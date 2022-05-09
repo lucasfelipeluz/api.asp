@@ -13,4 +13,5 @@ namespace Teste.Application.Dto
         public int Age { get; set; }
         public string Birth { get; set; }
     }
+
 }
